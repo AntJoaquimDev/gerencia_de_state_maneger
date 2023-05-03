@@ -1,4 +1,4 @@
-# gerencia_de_state_maneger
+# App gerencia_de_Estado_maneger
 
 A new Flutter project.
 
