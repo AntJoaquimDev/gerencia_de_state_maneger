@@ -2,30 +2,23 @@ import 'dart:math';
 
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
+import 'package:gerencia_de_state_maneger/change_notifier/imc_change_notifier_controller.dart';
 import 'package:intl/intl.dart';
 
-import '../../widgets_componet/imc_gauge.dart';
+import '../widgets_componet/imc_gauge.dart';
 
-class ValueNotifierPage extends StatefulWidget {
-  const ValueNotifierPage({Key? key}) : super(key: key);
+class ChangeNotifierPage extends StatefulWidget {
+  const ChangeNotifierPage({Key? key}) : super(key: key);
 
   @override
-  State<ValueNotifierPage> createState() => _ValueNotifierPageState();
+  State<ChangeNotifierPage> createState() => _ChangeNotifierPageState();
 }
 
-class _ValueNotifierPageState extends State<ValueNotifierPage> {
+class _ChangeNotifierPageState extends State<ChangeNotifierPage> {
+  final controller = ImcChangeNotifierController();
   final ECPeso = TextEditingController();
   final ECAltura = TextEditingController();
   final formKey = GlobalKey<FormState>();
-  var imc = ValueNotifier(0.0);
-
-  Future<void> _calcImc({required double peso, required double altura}) async {
-    imc.value = 0.0;
-
-    await Future.delayed(const Duration(seconds: 1));
-
-    imc.value = peso / pow(altura, 2);
-  }
 
   @override
   void dispose() {
@@ -38,7 +31,7 @@ class _ValueNotifierPageState extends State<ValueNotifierPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Imc ValueNotifier'),
+        title: const Text('Imc ChangeNotifier'),
       ),
       body: SingleChildScrollView(
         child: Form(
@@ -47,9 +40,9 @@ class _ValueNotifierPageState extends State<ValueNotifierPage> {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                ValueListenableBuilder(
-                  valueListenable: imc,
-                  builder: (_, imcValue, __) => ImcGauge(imc: imcValue),
+                AnimatedBuilder(
+                  animation: controller,
+                  builder: (context, child) => ImcGauge(imc: controller.imc),
                 ),
                 const SizedBox(height: 20),
                 TextFormField(
@@ -97,7 +90,7 @@ class _ValueNotifierPageState extends State<ValueNotifierPage> {
                             locale: 'pt_BR', decimalDigits: 2);
                         double peso = formater.parse(ECPeso.text) as double;
                         double altura = formater.parse(ECAltura.text) as double;
-                        _calcImc(peso: peso, altura: altura);
+                        controller.calcImc(peso: peso, altura: altura);
                       }
                     },
                     child: const Text('Calcular IMC'))
